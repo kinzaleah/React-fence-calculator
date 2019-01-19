@@ -1,10 +1,6 @@
 import React from "react";
 
 class QuestionOne extends React.Component {
-  constructor() {
-    super();
-  }
-
   render() {
     let answerOne = this.props.inputPosts
       ? `If you have ${this.props.inputPosts} posts then you will need ${
@@ -23,7 +19,17 @@ class QuestionOne extends React.Component {
           name="posts"
           onChange={this.props.handlePostChange}
         />
-        <div className="answer-one">{answerOne}</div>
+
+        {this.props.inputPosts && (
+          <div className="answer-one">
+            {answerOne}
+            <br />
+            <br />
+            <button type="submit" onClick={this.props.handleSaveQ1}>
+              Save result
+            </button>
+          </div>
+        )}
       </div>
     );
   }

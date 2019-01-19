@@ -1,10 +1,6 @@
 import React from "react";
 
 class QuestionThree extends React.Component {
-  constructor() {
-    super();
-  }
-
   render() {
     return (
       <div>
@@ -26,7 +22,16 @@ class QuestionThree extends React.Component {
           onChange={this.props.handleBiggestFenceChange}
         />
         <br />
-        <div className="answer-three">{this.props.calculateQ3Answer()}</div>
+        {this.props.inputPosts && this.props.inputPanels && (
+          <div className="answer-three">
+            {this.props.displayQ3Answer()}
+            <br />
+            <br />
+            <button type="submit" onClick={this.props.handleSaveQ3}>
+              Save result
+            </button>
+          </div>
+        )}
       </div>
     );
   }

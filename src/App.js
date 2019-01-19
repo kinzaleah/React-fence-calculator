@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import QuestionOne from "./components/QuestionOne";
 import QuestionTwo from "./components/QuestionTwo";
 import QuestionThree from "./components/QuestionThree";
+import WidthInput from "./components/WidthInput";
+import SavedCalculations from "./components/SavedCalculations";
 
 import "./App.css";
 
@@ -25,7 +27,8 @@ class App extends Component {
       q3Panels: null,
       q3Length: null,
       q3LeftoverPosts: null,
-      q3LeftoverPanels: null
+      q3LeftoverPanels: null,
+      savedCalculations: []
     };
 
     this.handlePostChange = this.handlePostChange.bind(this);
@@ -35,6 +38,64 @@ class App extends Component {
     this.handleBiggestFenceChange = this.handleBiggestFenceChange.bind(this);
     this.handleWidthChange = this.handleWidthChange.bind(this);
     this.calculateQ3Answer = this.calculateQ3Answer.bind(this);
+    this.displayQ3Answer = this.displayQ3Answer.bind(this);
+    this.handleSaveQ1 = this.handleSaveQ1.bind(this);
+    this.handleSaveQ2 = this.handleSaveQ2.bind(this);
+    this.handleSaveQ3 = this.handleSaveQ3.bind(this);
+  }
+
+  handleSaveQ1(event) {
+    console.log("Saved!");
+    let answer = {
+      q: 1,
+      q1InputPosts: this.state.q1Posts,
+      q1PanelsNeeded: this.state.q1PanelsNeeded,
+      timestamp: new Date()
+    };
+
+    this.setState(prevState => ({
+      savedCalculations: [...prevState.savedCalculations, answer]
+    }));
+  }
+
+  handleSaveQ2(event) {
+    console.log("Saved!");
+    let answer = {
+      q: 2,
+      q2InputLength: this.state.q2Length,
+      q2PostsNeeded: this.state.q2PostsNeeded,
+      q2PanelsNeeded: this.state.q2PanelsNeeded,
+      q2OutputLength: this.state.q2OverTotal,
+      q2PostWidth: this.state.postWidth,
+      q2PanelWidth: this.state.panelWidth,
+      timestamp: new Date()
+    };
+
+    this.setState(prevState => ({
+      savedCalculations: [...prevState.savedCalculations, answer]
+    }));
+  }
+
+  handleSaveQ3(event) {
+    console.log("Saved!");
+
+    let results = this.calculateQ3Answer();
+
+    let answer = {
+      q: 3,
+      q3InputPosts: this.state.q3Posts,
+      q3InputPanels: this.state.q3Panels,
+      q3Length: results.length,
+      q3LeftoverPosts: results.leftoverPosts,
+      q3LeftoverPanels: results.leftoverPanels,
+      q3PostWidth: this.state.postWidth,
+      q3PanelWidth: this.state.panelWidth,
+      timestamp: new Date()
+    };
+
+    this.setState(prevState => ({
+      savedCalculations: [...prevState.savedCalculations, answer]
+    }));
   }
 
   calculatePanelsForPosts(posts) {
@@ -146,6 +207,16 @@ class App extends Component {
       leftoverPosts = inputPosts - numPosts;
     }
 
+    return {
+      length,
+      leftoverPanels,
+      leftoverPosts
+    };
+  }
+
+  displayQ3Answer() {
+    const { length, leftoverPanels, leftoverPosts } = this.calculateQ3Answer();
+
     return `
       You can make a fence ${length}m long. 
       You will have ${leftoverPanels} panels and ${leftoverPosts} posts remaining.`;
@@ -165,30 +236,29 @@ class App extends Component {
     return (
       <div style={{ padding: "30px" }}>
         <h1>Javascript Fence Calculator</h1>
-        <p>Post width:</p>
-        <input type="text" name="postWidth" onChange={this.handleWidthChange} />
-        <p>Panel width:</p>
-        <input
-          type="text"
-          name="panelWidth"
-          onChange={this.handleWidthChange}
+
+        <WidthInput
+          handleWidthChange={this.handleWidthChange}
+          panelWidth={this.state.panelWidth}
+          postWidth={this.state.postWidth}
         />
-        <p>
-          Currently, the post width is {this.state.postWidth}m and panel width
-          is {this.state.panelWidth}m.
-        </p>
+
         <QuestionOne
           inputPosts={this.state.q1Posts}
           panelsNeeded={this.state.q1PanelsNeeded}
           handlePostChange={this.handlePostChange}
+          handleSaveQ1={this.handleSaveQ1}
         />
+
         <QuestionTwo
           inputLength={this.state.q2Length}
           postsNeeded={this.state.q2PostsNeeded}
           panelsNeeded={this.state.q2PanelsNeeded}
           totalLength={this.state.q2OverTotal}
           handleLengthChange={this.handleLengthChange}
+          handleSaveQ2={this.handleSaveQ2}
         />
+
         <QuestionThree
           inputPosts={this.state.q3Posts}
           inputPanels={this.state.q3Panels}
@@ -196,8 +266,11 @@ class App extends Component {
           leftoverPanels={this.state.q3LeftoverPanels}
           leftoverPosts={this.state.q3LeftoverPosts}
           handleBiggestFenceChange={this.handleBiggestFenceChange}
-          calculateQ3Answer={this.calculateQ3Answer}
+          displayQ3Answer={this.displayQ3Answer}
+          handleSaveQ3={this.handleSaveQ3}
         />
+
+        <SavedCalculations savedCalculations={this.state.savedCalculations} />
       </div>
     );
   }

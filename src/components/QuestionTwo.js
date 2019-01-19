@@ -1,10 +1,6 @@
 import React from "react";
 
 class QuestionTwo extends React.Component {
-  constructor() {
-    super();
-  }
-
   render() {
     let answerTwo = this.props.inputLength
       ? `If you want a post ${this.props.inputLength}m long, you will need ${
@@ -26,7 +22,16 @@ class QuestionTwo extends React.Component {
           name="length"
           onChange={this.props.handleLengthChange}
         />
-        <div className="answer-two">{answerTwo}</div>
+        {this.props.inputLength && (
+          <div className="answer-two">
+            {answerTwo}
+            <br />
+            <br />
+            <button type="submit" onClick={this.props.handleSaveQ2}>
+              Save result
+            </button>
+          </div>
+        )}
       </div>
     );
   }
