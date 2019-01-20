@@ -10,9 +10,7 @@ class QuestionOne extends React.Component {
 
     return (
       <div>
-        <h1>Question One!</h1>
-
-        <h2>How many panels should I buy so all my posts are used up?</h2>
+        <h2>Q1: How many panels should I buy so all my posts are used up?</h2>
         <p>Please enter the number of posts you have:</p>
         <input
           type="text"

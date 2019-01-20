@@ -12,7 +12,6 @@ class QuestionTwo extends React.Component {
       : null;
     return (
       <div>
-        <h1>Question Two!</h1>
         <h2>
           Q2: How many posts and panels do I need to make a fence of length Z?
         </h2>

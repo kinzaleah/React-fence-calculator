@@ -7,11 +7,13 @@ class SavedCalculations extends React.Component {
     return (
       <div>
         <h1>Saved Calculations!</h1>
+
+        <button onClick={this.props.removeSavedCalculations}>Clear</button>
+        <br />
         {savedCalculations.map(calc => {
           if (calc.q === 1) {
             return (
               <div key={calc.timestamp.getTime()}>
-                <p>Time: {calc.timestamp.getTime()}</p>
                 <p>Question 1</p>
                 Posts input: {calc.q1InputPosts} <br />
                 Panels needed: {calc.q1PanelsNeeded}

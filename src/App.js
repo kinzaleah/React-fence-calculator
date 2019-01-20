@@ -13,22 +13,32 @@ let panelWidth = 4;
 class App extends Component {
   constructor() {
     super();
+    let savedCalculations =
+      JSON.parse(localStorage.getItem("savedCalculations")) || [];
+
+    savedCalculations = savedCalculations.map(calc => {
+      calc.timestamp = new Date(calc.timestamp);
+      return calc;
+    });
+
     this.state = {
       postWidth: postWidth,
       panelWidth: panelWidth,
       q1Posts: null,
       q1PanelsNeeded: null,
+
       q2Panels: null,
       q2PostsNeeded: null,
       q2PanelsNeeded: null,
       q2Length: null,
       q2OverTotal: null,
+
       q3Posts: null,
       q3Panels: null,
       q3Length: null,
       q3LeftoverPosts: null,
       q3LeftoverPanels: null,
-      savedCalculations: []
+      savedCalculations
     };
 
     this.handlePostChange = this.handlePostChange.bind(this);
@@ -42,10 +52,11 @@ class App extends Component {
     this.handleSaveQ1 = this.handleSaveQ1.bind(this);
     this.handleSaveQ2 = this.handleSaveQ2.bind(this);
     this.handleSaveQ3 = this.handleSaveQ3.bind(this);
+    this.saveCalculation = this.saveCalculation.bind(this);
+    this.removeSavedCalculations = this.removeSavedCalculations.bind(this);
   }
 
   handleSaveQ1(event) {
-    console.log("Saved!");
     let answer = {
       q: 1,
       q1InputPosts: this.state.q1Posts,
@@ -53,13 +64,10 @@ class App extends Component {
       timestamp: new Date()
     };
 
-    this.setState(prevState => ({
-      savedCalculations: [...prevState.savedCalculations, answer]
-    }));
+    this.saveCalculation(answer);
   }
 
   handleSaveQ2(event) {
-    console.log("Saved!");
     let answer = {
       q: 2,
       q2InputLength: this.state.q2Length,
@@ -71,14 +79,10 @@ class App extends Component {
       timestamp: new Date()
     };
 
-    this.setState(prevState => ({
-      savedCalculations: [...prevState.savedCalculations, answer]
-    }));
+    this.saveCalculation(answer);
   }
 
   handleSaveQ3(event) {
-    console.log("Saved!");
-
     let results = this.calculateQ3Answer();
 
     let answer = {
@@ -93,9 +97,26 @@ class App extends Component {
       timestamp: new Date()
     };
 
-    this.setState(prevState => ({
-      savedCalculations: [...prevState.savedCalculations, answer]
+    this.saveCalculation(answer);
+  }
+
+  saveCalculation(answer) {
+    const key = "savedCalculations";
+    const newSavedCalculations = [...this.state.savedCalculations, answer];
+
+    localStorage.setItem(key, JSON.stringify(newSavedCalculations));
+
+    this.setState(() => ({
+      [key]: newSavedCalculations
     }));
+  }
+
+  removeSavedCalculations() {
+    localStorage.removeItem("savedCalculations");
+
+    this.setState({
+      savedCalculations: []
+    });
   }
 
   calculatePanelsForPosts(posts) {
@@ -138,10 +159,7 @@ class App extends Component {
     // loop through increase panels & constructedLength each time until you reach the length input
     while (constructedLength < length) {
       numPanels++;
-      console.log(numPanels);
-
       constructedLength += postWidth + panelWidth;
-      console.log(constructedLength);
     }
 
     let underPanels = numPanels - 1;
@@ -234,43 +252,49 @@ class App extends Component {
 
   render() {
     return (
-      <div style={{ padding: "30px" }}>
-        <h1>Javascript Fence Calculator</h1>
+      <div className="container" style={{ padding: "30px" }}>
+        <div>
+          <h1>Javascript Fence Calculator</h1>
 
-        <WidthInput
-          handleWidthChange={this.handleWidthChange}
-          panelWidth={this.state.panelWidth}
-          postWidth={this.state.postWidth}
-        />
+          <WidthInput
+            handleWidthChange={this.handleWidthChange}
+            panelWidth={this.state.panelWidth}
+            postWidth={this.state.postWidth}
+          />
 
-        <QuestionOne
-          inputPosts={this.state.q1Posts}
-          panelsNeeded={this.state.q1PanelsNeeded}
-          handlePostChange={this.handlePostChange}
-          handleSaveQ1={this.handleSaveQ1}
-        />
+          <QuestionOne
+            inputPosts={this.state.q1Posts}
+            panelsNeeded={this.state.q1PanelsNeeded}
+            handlePostChange={this.handlePostChange}
+            handleSaveQ1={this.handleSaveQ1}
+          />
 
-        <QuestionTwo
-          inputLength={this.state.q2Length}
-          postsNeeded={this.state.q2PostsNeeded}
-          panelsNeeded={this.state.q2PanelsNeeded}
-          totalLength={this.state.q2OverTotal}
-          handleLengthChange={this.handleLengthChange}
-          handleSaveQ2={this.handleSaveQ2}
-        />
+          <QuestionTwo
+            inputLength={this.state.q2Length}
+            postsNeeded={this.state.q2PostsNeeded}
+            panelsNeeded={this.state.q2PanelsNeeded}
+            totalLength={this.state.q2OverTotal}
+            handleLengthChange={this.handleLengthChange}
+            handleSaveQ2={this.handleSaveQ2}
+          />
 
-        <QuestionThree
-          inputPosts={this.state.q3Posts}
-          inputPanels={this.state.q3Panels}
-          totalLength={this.state.q3Length}
-          leftoverPanels={this.state.q3LeftoverPanels}
-          leftoverPosts={this.state.q3LeftoverPosts}
-          handleBiggestFenceChange={this.handleBiggestFenceChange}
-          displayQ3Answer={this.displayQ3Answer}
-          handleSaveQ3={this.handleSaveQ3}
-        />
-
-        <SavedCalculations savedCalculations={this.state.savedCalculations} />
+          <QuestionThree
+            inputPosts={this.state.q3Posts}
+            inputPanels={this.state.q3Panels}
+            totalLength={this.state.q3Length}
+            leftoverPanels={this.state.q3LeftoverPanels}
+            leftoverPosts={this.state.q3LeftoverPosts}
+            handleBiggestFenceChange={this.handleBiggestFenceChange}
+            displayQ3Answer={this.displayQ3Answer}
+            handleSaveQ3={this.handleSaveQ3}
+          />
+        </div>
+        <div>
+          <SavedCalculations
+            savedCalculations={this.state.savedCalculations}
+            removeSavedCalculations={this.removeSavedCalculations}
+          />
+        </div>
       </div>
     );
   }

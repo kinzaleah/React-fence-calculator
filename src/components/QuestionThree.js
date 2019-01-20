@@ -4,7 +4,6 @@ class QuestionThree extends React.Component {
   render() {
     return (
       <div>
-        <h1>Question Three!</h1>
         <h2>Q3: What’s the biggest fence I can make?</h2>
         <p>Please enter how many posts and panels you have:</p>
         Posts:
